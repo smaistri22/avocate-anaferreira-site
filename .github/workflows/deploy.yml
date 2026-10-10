@@ -24,6 +24,7 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npm run build
+      - run: node .github/postbuild.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
