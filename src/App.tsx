@@ -10,17 +10,55 @@ import { HonorairesView } from './components/HonorairesView';
 import { BookingModal } from './components/BookingModal';
 import { PracticeDetailModal } from './components/PracticeDetailModal';
 import { LegalNoticeModal } from './components/LegalNoticeModal';
+import { SEO_PAGES, SITE_URL } from './data/seoPages.js';
+
+// Retrouve la rubrique correspondant à l'adresse affichée dans le navigateur.
+function pageFromPath(pathname: string): PageId {
+  const clean = pathname.replace(/\/+$/, '') || '/';
+  const ids = Object.keys(SEO_PAGES) as PageId[];
+  const match = ids.find((id) => (SEO_PAGES[id].path.replace(/\/+$/, '') || '/') === clean);
+  return match ?? 'accueil';
+}
+
+function setMeta(selector: string, attribute: string, value: string) {
+  const element = document.querySelector(selector);
+  if (element) element.setAttribute(attribute, value);
+}
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<PageId>('accueil');
+  const [currentPage, setCurrentPageState] = useState<PageId>(() => pageFromPath(window.location.pathname));
   const [language, setLanguage] = useState<Language>('fr');
   const [selectedArea, setSelectedArea] = useState<PracticeArea | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isLegalNoticesOpen, setIsLegalNoticesOpen] = useState(false);
 
-  // Scroll to top on page change
+  // Change de rubrique et met à jour l'adresse du navigateur (une adresse par rubrique)
+  const setCurrentPage = (page: PageId) => {
+    const path = SEO_PAGES[page].path;
+    if (window.location.pathname !== path) {
+      window.history.pushState({ page }, '', path);
+    }
+    setCurrentPageState(page);
+  };
+
+  // Boutons Précédent / Suivant du navigateur
+  useEffect(() => {
+    const onPopState = () => setCurrentPageState(pageFromPath(window.location.pathname));
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  // Scroll to top on page change + titre, description et adresse canonique de la rubrique
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    const seo = SEO_PAGES[currentPage];
+    const url = SITE_URL + seo.path;
+    document.title = seo.title;
+    setMeta('meta[name="description"]', 'content', seo.description);
+    setMeta('link[rel="canonical"]', 'href', url);
+    setMeta('meta[property="og:title"]', 'content', seo.title);
+    setMeta('meta[property="og:description"]', 'content', seo.description);
+    setMeta('meta[property="og:url"]', 'content', url);
   }, [currentPage]);
 
   return (
