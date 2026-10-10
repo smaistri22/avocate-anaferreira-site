@@ -1,0 +1,6 @@
+{
+  "name": "Ana Ferreira - Cabinet d'Avocat",
+  "description": "Site officiel du cabinet d'avocat Ana Ferreira au Barreau de Bruxelles. Expertise en droit de la famille, droit du roulage, droit des étrangers et droit collaboratif.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
