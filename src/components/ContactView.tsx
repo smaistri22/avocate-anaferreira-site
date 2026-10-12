@@ -53,8 +53,27 @@ export const ContactView: React.FC<ContactViewProps> = ({ language, onOpenBookin
     document.body.removeChild(link);
   };
 
+  // Envoi : ouvre la messagerie du visiteur avec un e-mail pré-rempli adressé au cabinet
+  // (aucun service tiers : le message part de la boîte du visiteur vers celle du cabinet).
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+    const subject = `[Site internet] ${formData.subject} – ${fullName}`;
+    const body = [
+      formData.message,
+      '',
+      '—',
+      `Nom : ${fullName}`,
+      `E-mail : ${formData.email}`,
+      formData.phone ? `Téléphone : ${formData.phone}` : '',
+      `Objet : ${formData.subject}`,
+    ].filter((line, index, lines) => line !== '' || index < lines.length - 1).join('\n');
+    const mailto = `mailto:${CONTACT_INFO.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const link = document.createElement('a');
+    link.href = mailto;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     setFormSubmitted(true);
   };
 
@@ -85,14 +104,18 @@ export const ContactView: React.FC<ContactViewProps> = ({ language, onOpenBookin
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h3 className="font-serif text-xl font-bold text-[#06151a]">
-                {language === 'fr' 
-                  ? 'Message envoyé avec succès' 
-                  : language === 'pt' 
-                  ? 'Mensagem enviada com sucesso' 
-                  : 'Message sent successfully'}
+                {language === 'fr'
+                  ? 'Votre message est prêt'
+                  : language === 'pt'
+                  ? 'A sua mensagem está pronta'
+                  : 'Your message is ready'}
               </h3>
               <p className="text-sm text-[#43484a] leading-relaxed max-w-md mx-auto">
-                {t.contactPage.successMessage}
+                {language === 'fr'
+                  ? `Votre messagerie s'est ouverte avec votre message pré-rempli : il ne reste qu'à cliquer sur Envoyer. Si rien ne s'est ouvert, écrivez directement à ${CONTACT_INFO.email} ou appelez le ${CONTACT_INFO.phone}.`
+                  : language === 'pt'
+                  ? `O seu programa de e-mail abriu com a mensagem pré-preenchida: basta clicar em Enviar. Se nada abriu, escreva diretamente para ${CONTACT_INFO.email} ou ligue para ${CONTACT_INFO.phone}.`
+                  : `Your email app has opened with your message pre-filled: just click Send. If nothing opened, write directly to ${CONTACT_INFO.email} or call ${CONTACT_INFO.phone}.`}
               </p>
               <button
                 type="button"
