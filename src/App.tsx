@@ -7,7 +7,6 @@ import { ExpertiseView } from './components/ExpertiseView';
 import { FaqView } from './components/FaqView';
 import { ContactView } from './components/ContactView';
 import { HonorairesView } from './components/HonorairesView';
-import { BookingModal } from './components/BookingModal';
 import { PracticeDetailModal } from './components/PracticeDetailModal';
 import { LegalNoticeModal } from './components/LegalNoticeModal';
 import { SEO_PAGES, SITE_URL } from './data/seoPages.js';
@@ -20,6 +19,13 @@ function pageFromPath(pathname: string): PageId {
   return match ?? 'accueil';
 }
 
+// Page de réservation Google Agenda de Me Ferreira (disponibilités réelles de son agenda)
+const BOOKING_URL = 'https://calendar.app.google/NBwk5RF7S5xZX32G9';
+
+function openBooking() {
+  window.open(BOOKING_URL, '_blank', 'noopener,noreferrer');
+}
+
 function setMeta(selector: string, attribute: string, value: string) {
   const element = document.querySelector(selector);
   if (element) element.setAttribute(attribute, value);
@@ -29,7 +35,6 @@ export default function App() {
   const [currentPage, setCurrentPageState] = useState<PageId>(() => pageFromPath(window.location.pathname));
   const [language, setLanguage] = useState<Language>('fr');
   const [selectedArea, setSelectedArea] = useState<PracticeArea | null>(null);
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isLegalNoticesOpen, setIsLegalNoticesOpen] = useState(false);
 
   // Change de rubrique et met à jour l'adresse du navigateur (une adresse par rubrique)
@@ -69,7 +74,7 @@ export default function App() {
         setCurrentPage={setCurrentPage}
         language={language}
         setLanguage={setLanguage}
-        onOpenBooking={() => setIsBookingOpen(true)}
+        onOpenBooking={openBooking}
       />
 
       {/* Main Content Area */}
@@ -78,7 +83,7 @@ export default function App() {
           <HomeView
             language={language}
             setCurrentPage={setCurrentPage}
-            onOpenBooking={() => setIsBookingOpen(true)}
+            onOpenBooking={openBooking}
             onSelectArea={(area) => setSelectedArea(area)}
           />
         )}
@@ -87,14 +92,14 @@ export default function App() {
           <ExpertiseView
             language={language}
             onSelectArea={(area) => setSelectedArea(area)}
-            onOpenBooking={() => setIsBookingOpen(true)}
+            onOpenBooking={openBooking}
           />
         )}
 
         {currentPage === 'honoraires' && (
           <HonorairesView
             language={language}
-            onOpenBooking={() => setIsBookingOpen(true)}
+            onOpenBooking={openBooking}
           />
         )}
 
@@ -102,14 +107,14 @@ export default function App() {
           <FaqView
             language={language}
             setCurrentPage={setCurrentPage}
-            onOpenBooking={() => setIsBookingOpen(true)}
+            onOpenBooking={openBooking}
           />
         )}
 
         {currentPage === 'contact' && (
           <ContactView
             language={language}
-            onOpenBooking={() => setIsBookingOpen(true)}
+            onOpenBooking={openBooking}
           />
         )}
       </main>
@@ -122,17 +127,12 @@ export default function App() {
       />
 
       {/* Interactive Modals */}
-      <BookingModal
-        isOpen={isBookingOpen}
-        onClose={() => setIsBookingOpen(false)}
-        language={language}
-      />
 
       <PracticeDetailModal
         area={selectedArea}
         onClose={() => setSelectedArea(null)}
         language={language}
-        onOpenBooking={() => setIsBookingOpen(true)}
+        onOpenBooking={openBooking}
       />
 
       <LegalNoticeModal
