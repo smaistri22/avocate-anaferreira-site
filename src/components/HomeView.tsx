@@ -91,7 +91,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             {/* Trust points */}
             <div className="pt-6 grid grid-cols-3 gap-4 border-t border-[#c3c7c9]/50 text-xs sm:text-sm">
               <div>
-                <div className="font-serif text-xl sm:text-2xl font-bold text-[#06151a]">10+</div>
+                <div className="font-serif text-xl sm:text-2xl font-bold text-[#06151a]">4</div>
                 <div className="text-[#43484a]">
                   {language === 'fr' ? "Années d'expérience" : language === 'pt' ? 'Anos de experiência' : language === 'es' ? 'Años de experiencia' : 'Years of experience'}
                 </div>
